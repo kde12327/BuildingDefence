@@ -4,6 +4,7 @@
 
 #include "BuildingDefence.h"
 #include "GameFramework/PlayerController.h"
+#include "Sector.h"
 #include "BDPlayerController.generated.h"
 
 /**
@@ -21,4 +22,7 @@ protected:
 
 private:
 	void OnMouseClicked();
+
+private:
+	ASector* ClickedSector;
 };

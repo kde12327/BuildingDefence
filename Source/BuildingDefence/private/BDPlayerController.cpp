@@ -2,7 +2,6 @@
 
 
 #include "BDPlayerController.h"
-#include "Sector.h"
 
 void ABDPlayerController::BeginPlay()
 {
@@ -26,7 +25,21 @@ void ABDPlayerController::OnMouseClicked()
 
 	BDCHECK(nullptr != Hit.GetActor());
 	BDLOG(Warning, TEXT("%s"), *Hit.GetActor()->GetName());
-	BDCHECK(nullptr != Cast<ASector>(Hit.GetActor()));
 
+
+
+	if (nullptr != Cast<ASector>(Hit.GetActor()))
+	{
+		//BDCHECK(nullptr != ClickedSector);
+		if (nullptr != ClickedSector && ClickedSector != Cast<ASector>(Hit.GetActor()))
+		{
+			ClickedSector->OnSectorFocusOut();
+		}
+		ClickedSector = Cast<ASector>(Hit.GetActor());
+		ClickedSector->OnSectorClicked();
+		
+
+		
+	}
 
 }

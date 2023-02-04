@@ -3,6 +3,7 @@
 
 #include "BDPlayerPawn.h"
 
+
 // Sets default values
 ABDPlayerPawn::ABDPlayerPawn()
 {
@@ -12,10 +13,20 @@ ABDPlayerPawn::ABDPlayerPawn()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 
+
+
 	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
+
+
 	SpringArm->TargetArmLength = 600.0f;
 	SpringArm->SetRelativeRotation(FRotator(-80.0f, 0.0f, 0.0f));
+
+
+
+	
+	
+
 }
 
 // Called when the game starts or when spawned
