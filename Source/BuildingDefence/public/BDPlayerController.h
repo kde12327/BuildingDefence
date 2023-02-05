@@ -15,6 +15,9 @@ class BUILDINGDEFENCE_API ABDPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	ABDPlayerController();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -25,4 +28,12 @@ private:
 
 private:
 	ASector* ClickedSector;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UBDBottomWidget> BottomWidgetClass;
+
+private:
+	UPROPERTY()
+		class UBDBottomWidget* BottomWidget;
 };

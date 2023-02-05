@@ -25,7 +25,7 @@ ASector::ASector()
 	SectorDetailWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	SectorDetailWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/BuildingDefence/UI/UI_SDSectorHUDWidget.UI_SDSectorHUDWidget_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/BuildingDefence/UI/UI_BDSectorHUDWidget.UI_BDSectorHUDWidget_C"));
 	BDCHECK(UI_HUD.Succeeded());
 	if (UI_HUD.Succeeded())
 	{
