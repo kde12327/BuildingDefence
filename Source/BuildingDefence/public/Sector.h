@@ -4,6 +4,8 @@
 
 #include "BuildingDefence.h"
 #include "GameFramework/Actor.h"
+#include "BDBuilding.h"
+
 #include "Sector.generated.h"
 
 UCLASS()
@@ -14,6 +16,8 @@ class BUILDINGDEFENCE_API ASector : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASector();
+
+	void BuildBuilding();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,8 +36,13 @@ public:
 		class UWidgetComponent* SectorDetailWidget;
 
 
+
 public:
 	void OnSectorClicked();
 
 	void OnSectorFocusOut();
+
+private:
+
+	TArray<ABDBuilding*> Buildings;
 };

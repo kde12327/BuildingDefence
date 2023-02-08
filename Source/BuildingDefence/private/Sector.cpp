@@ -36,6 +36,14 @@ ASector::ASector()
 
 }
 
+void ASector::BuildBuilding()
+{
+	BDLOG_S(Warning);
+	auto Building = GetWorld()->SpawnActor<ABDBuilding>(GetActorLocation(), FRotator::ZeroRotator);
+
+	Buildings.Add(Building);
+}
+
 // Called when the game starts or when spawned
 void ASector::BeginPlay()
 {

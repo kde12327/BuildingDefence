@@ -22,7 +22,11 @@ void ABDPlayerController::BeginPlay()
 	BottomWidget = CreateWidget<UBDBottomWidget>(this, BottomWidgetClass);
 	BottomWidget->AddToViewport(1);
 	BottomWidget->SetVisibility(ESlateVisibility::Hidden);
+	BottomWidget->OnBuild.AddLambda([this]()->void {
+		BDCHECK(nullptr != ClickedSector);
 
+		ClickedSector->BuildBuilding();
+	});
 }
 
 void ABDPlayerController::SetupInputComponent()
