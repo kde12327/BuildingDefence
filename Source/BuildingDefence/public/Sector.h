@@ -30,7 +30,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere, Category = Click)
-		UBoxComponent* Trigger;
+		UBoxComponent* ClickableTrigger;
+
+	UPROPERTY(VisibleAnywhere, Category = Range)
+		USphereComponent* RangeTrigger;
 
 	UPROPERTY(VisibleAnywhere, Category = UI)
 		class UWidgetComponent* SectorDetailWidget;
@@ -45,4 +48,13 @@ public:
 private:
 
 	TArray<ABDBuilding*> Buildings;
+
+	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
+		UStaticMeshComponent* BaseMesh;
+
+	float TakingMoneyPerSecond;
+	float TakingMoneyRadius;
+	
+	int32 OwnerPlayerIndex = 0;
+
 };

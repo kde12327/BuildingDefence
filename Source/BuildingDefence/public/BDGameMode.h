@@ -16,4 +16,7 @@ class BUILDINGDEFENCE_API ABDGameMode : public AGameModeBase
 
 public:
 	ABDGameMode();
+
+	virtual void PostInitializeComponents() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };
