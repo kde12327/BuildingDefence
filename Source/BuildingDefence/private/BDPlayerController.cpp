@@ -27,6 +27,13 @@ void ABDPlayerController::BeginPlay()
 
 		ClickedSector->BuildBuilding();
 	});
+
+	BottomWidget->OnReroll.AddLambda([this]()->void {
+		BDCHECK(nullptr != ClickedSector);
+
+		ClickedSector->Reroll();
+		BottomWidget->UpdateRullet(*ClickedSector);
+	});
 }
 
 void ABDPlayerController::SetupInputComponent()
@@ -56,15 +63,18 @@ void ABDPlayerController::OnMouseClicked()
 		ClickedSector->OnSectorClicked();
 		BottomWidget->SetVisibility(ESlateVisibility::Visible);
 
-
+		BottomWidget->UpdateRullet(*ClickedSector);
 
 		
 	}
 	else
 	{
-		ClickedSector->OnSectorFocusOut();
-		ClickedSector = nullptr;
-		BottomWidget->SetVisibility(ESlateVisibility::Hidden);
+		if (ClickedSector) {
+			ClickedSector->OnSectorFocusOut();
+			ClickedSector = nullptr;
+			BottomWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		
 
 
 

@@ -6,13 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "BDBuilding.generated.h"
 
-enum class BuildingType
-{
-	RESIDENCE,
-	COMMERCE,
-	INDUSTRY,
-	TOURISM
-};
 
 UCLASS()
 class BUILDINGDEFENCE_API ABDBuilding : public AActor
@@ -31,7 +24,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void SetType(BuildingType NewType);
+	void SetGrade(int32 NewGrade);
+
+	BuildingType GetType();
+	int32 GetGrade();
+
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
 		UStaticMeshComponent* Mesh;
+
+protected:
+	BuildingType Type = BuildingType::RESIDENCE;
+
+	int32 Grade = 0;
 };

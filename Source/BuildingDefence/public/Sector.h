@@ -45,6 +45,14 @@ public:
 
 	void OnSectorFocusOut();
 
+	void Reroll();
+
+	void UpdateState();
+
+public:
+	TArray<BuildingType> RulletTypeArray;
+
+
 private:
 
 	TArray<ABDBuilding*> Buildings;
@@ -52,9 +60,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
 		UStaticMeshComponent* BaseMesh;
 
+	TArray<int32> BuildingGrades;
+
 	float TakingMoneyPerSecond;
 	float TakingMoneyRadius;
+	float ProducedMoneyPerSecond;
+	int32 AdditionalPersonNum;
 	
 	int32 OwnerPlayerIndex = 0;
+
+	bool CanBuild = false;
+
 
 };

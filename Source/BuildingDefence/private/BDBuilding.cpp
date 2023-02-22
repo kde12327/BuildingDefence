@@ -42,3 +42,22 @@ void ABDBuilding::Tick(float DeltaTime)
 
 }
 
+void ABDBuilding::SetType(BuildingType NewType)
+{
+	Type = NewType;
+}
+
+void ABDBuilding::SetGrade(int32 NewGrade)
+{
+	Grade = NewGrade;
+}
+
+BuildingType ABDBuilding::GetType()
+{
+	return Type;
+}
+
+int32 ABDBuilding::GetGrade()
+{
+	return Grade;
+}

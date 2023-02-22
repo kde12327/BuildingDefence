@@ -12,3 +12,20 @@ DECLARE_LOG_CATEGORY_EXTERN(BuildingDefence, Log, All);
 #define BDLOG(Verbosity, Format, ...) UE_LOG(BuildingDefence, Verbosity, TEXT("%s %s"), *BDLOG_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
 
 #define BDCHECK(Expr, ...) { if(!(Expr)) { BDLOG(Error, TEXT("ASSERTION : %s"), TEXT("'"#Expr"'")); return __VA_ARGS__;}}
+
+enum class BuildingType
+{
+	RESIDENCE,
+	COMMERCE,
+	INDUSTRY,
+	TOURISM,
+	END,
+};
+
+static const FText BuildingTypeString[] =
+{ 
+	FText::FromString(FString("RESIDENCE")),
+	FText::FromString(FString("COMMERCE")),
+	FText::FromString(FString("INDUSTRY")),
+	FText::FromString(FString("TOURISM"))
+};

@@ -4,6 +4,8 @@
 
 #include "BuildingDefence.h"
 #include "Blueprint/UserWidget.h"
+#include "Sector.h"
+
 #include "BDBottomWidget.generated.h"
 
 /**
@@ -35,9 +37,19 @@ protected:
 	UPROPERTY()
 		class UButton* BuildButton;
 
+	UPROPERTY()
+		TArray<class UTextBlock*> RulletTextArray;
+	
+	UPROPERTY()
+		class UTextBlock* RulletText;
+
+
 public:
 	FOnBuildClickedDelegate OnBuild;
 
 	FOnRerollClickedDelegate OnReroll;
+
+	void UpdateRullet(ASector& ClickedSector);
+	
 
 };

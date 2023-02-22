@@ -26,6 +26,7 @@ ASector::ASector()
 
 
 	ClickableTrigger->SetBoxExtent(FVector(40.0f, 42.0f, 30.0f));
+	ClickableTrigger->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 	ClickableTrigger->SetCollisionProfileName(TEXT("ClickableObject"));
 	RangeTrigger->SetRelativeScale3D(FVector(4.0f, 4.0f, 4.0f));
 
@@ -36,7 +37,7 @@ ASector::ASector()
 	if (SM_PALLET.Succeeded())
 	{
 		BaseMesh->SetStaticMesh(SM_PALLET.Object);
-		BaseMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -30.0f));
+		BaseMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 		//Mesh->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 		//Mesh->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 	}
@@ -58,17 +59,70 @@ ASector::ASector()
 	}
 
 
-	TakingMoneyPerSecond = 10.0f;
-	TakingMoneyRadius = 150.0f;
+	TakingMoneyPerSecond = 0.0f;
+	TakingMoneyRadius = 0.0f;
+	ProducedMoneyPerSecond = 0.0f;
+	AdditionalPersonNum = 0;
+
+
+	BuildingGrades.Init(0, 4);
+
+	RulletTypeArray.Init(BuildingType::RESIDENCE, 5);
+	Reroll();
 
 }
 
 void ASector::BuildBuilding()
 {
 	BDLOG_S(Warning);
-	auto Building = GetWorld()->SpawnActor<ABDBuilding>(GetActorLocation(), FRotator::ZeroRotator);
+	if (CanBuild)
+	{
+		int32 Count[5] = { 0, };
+		TArray<int32> MaxTypes;
+		int32 MaxType;
+		int32 MaxValue = 0;
+		
 
-	Buildings.Add(Building);
+		for (int i = 0; i < RulletTypeArray.Num(); i++)
+		{
+			Count[static_cast<int32>(RulletTypeArray[i])]++;
+		}
+
+		for (int i = 0; i < RulletTypeArray.Num(); i++)
+		{
+			if (MaxValue < Count[i])
+			{
+				MaxValue = Count[i];
+				MaxTypes.SetNum(0);
+				MaxTypes.Add(i);
+			}
+			else if (MaxValue == Count[i])
+			{
+				MaxTypes.Add(i);
+			}
+		}
+
+		if (MaxTypes.Num() == 1)
+		{
+			MaxType = MaxTypes[0];
+		}
+		else
+		{
+			MaxType = MaxTypes[FMath::RandRange(0, MaxTypes.Num() - 1)];
+		}
+		
+		
+		auto Building = GetWorld()->SpawnActor<ABDBuilding>(GetActorLocation() + FVector(0.0f, 0.0f, 45.0f), FRotator::ZeroRotator);
+		Building->SetType(static_cast<BuildingType>(MaxType));
+		Building->SetGrade(MaxValue);
+
+		Buildings.Add(Building);
+		UpdateState();
+
+		CanBuild = false;
+
+		BDLOG(Warning, TEXT("%f %f %f %d"), TakingMoneyPerSecond, TakingMoneyRadius, ProducedMoneyPerSecond, AdditionalPersonNum)
+	}
 }
 
 // Called when the game starts or when spawned
@@ -130,7 +184,13 @@ void ASector::Tick(float DeltaTime)
 		
 	}
 
-	
+	float ProducedMoney = 0.0f;
+	ProducedMoney += ProducedMoneyPerSecond * DeltaTime;
+	if (ProducedMoney > 0.0f)
+	{
+		ABDPlayerState* BDPlayerState = Cast<ABDPlayerState>(UGameplayStatics::GetPlayerPawn(World, 0)->GetPlayerState());
+		BDPlayerState->AddMoney(ProducedMoney);
+	}
 
 	DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Red, false, 0.2f);
 
@@ -146,4 +206,35 @@ void ASector::OnSectorClicked()
 void ASector::OnSectorFocusOut()
 {
 	SectorDetailWidget->SetHiddenInGame(true);
+}
+
+void ASector::Reroll()
+{
+	for (int i = 0; i < RulletTypeArray.Num(); i++)
+	{
+		RulletTypeArray[i] = static_cast<BuildingType>(FMath::RandRange(static_cast<int32>(BuildingType::RESIDENCE), static_cast<int32>(BuildingType::TOURISM)));
+	}
+
+	CanBuild = true;
+}
+
+void ASector::UpdateState()
+{
+	// Initiate BuildingGrades
+	for (int i = 0; i < BuildingGrades.Num(); i++)
+	{
+		BuildingGrades[i] = 0;
+	}
+
+	// Count Buildings Grade
+	for (int i = 0; i < Buildings.Num(); i++)
+	{
+		BuildingGrades[static_cast<int32>(Buildings[i]->GetType())] = Buildings[i]->GetGrade();
+	}
+
+	TakingMoneyPerSecond = BuildingGrades[static_cast<int32>(BuildingType::COMMERCE)] * 10.0f;
+	TakingMoneyRadius = (BuildingGrades[static_cast<int32>(BuildingType::TOURISM)] * 0.1f + 1.0f) * 150.0f;
+	ProducedMoneyPerSecond = BuildingGrades[static_cast<int32>(BuildingType::INDUSTRY)] * 2.0f;
+	AdditionalPersonNum = BuildingGrades[static_cast<int32>(BuildingType::RESIDENCE)];
+
 }

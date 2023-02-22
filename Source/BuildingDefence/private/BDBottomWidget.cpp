@@ -3,6 +3,7 @@
 
 #include "BDBottomWidget.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 
 void UBDBottomWidget::NativeConstruct()
@@ -21,7 +22,15 @@ void UBDBottomWidget::NativeConstruct()
 		BuildButton->OnClicked.AddDynamic(this, &UBDBottomWidget::OnBuildClicked);
 	}
 
-}
+	for (int i = 0; i < 5; i++)
+	{
+		RulletTextArray.Add(Cast<UTextBlock>(GetWidgetFromName(FName(FString(TEXT("TextRullet")) + FString::FromInt(i)))));
+
+	}
+
+	//RulletText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextRullet0")));
+	//BDCHECK(nullptr != RulletText);
+}	
 
 void UBDBottomWidget::OnRerollClicked()
 {
@@ -36,5 +45,23 @@ void UBDBottomWidget::OnBuildClicked()
 	BDLOG_S(Warning);
 
 	OnBuild.Broadcast();
+
+}
+
+void UBDBottomWidget::UpdateRullet(ASector& ClickedSector)
+{
+	BDLOG_S(Warning);
+	//TODO
+	//BDCHECK(nullptr != RulletText);
+	//RulletText->SetText(FText::FromString(FString::FromInt(1)));
+	BDLOG(Warning, TEXT("%d"), RulletTextArray.Num());
+
+	for (int i = 0; i < 5; i++)
+	{
+		BDCHECK(nullptr != RulletTextArray[i]);
+		BDLOG(Warning, TEXT("%d"), ClickedSector.RulletTypeArray[i]);
+
+		RulletTextArray[i]->SetText(BuildingTypeString[static_cast<int32>(ClickedSector.RulletTypeArray[i])]);
+	}
 
 }
