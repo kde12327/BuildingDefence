@@ -21,6 +21,8 @@ public:
 
 	bool UseMoney(float Cost);
 	void AddMoney(float IncomeMoney);
+	int32 GetCurrentMoney();
+	bool HasMoney(float Money);
 
 protected:
 	UPROPERTY(Transient)

@@ -28,8 +28,11 @@ void UBDBottomWidget::NativeConstruct()
 
 	}
 
-	//RulletText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextRullet0")));
-	//BDCHECK(nullptr != RulletText);
+	MoneyText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextMoney")));
+
+	RerollCostText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextRerollCost")));
+
+	BuildCostText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextBuildCost")));
 }	
 
 void UBDBottomWidget::OnRerollClicked()
@@ -51,9 +54,9 @@ void UBDBottomWidget::OnBuildClicked()
 void UBDBottomWidget::UpdateRullet(ASector& ClickedSector)
 {
 	BDLOG_S(Warning);
-	//TODO
-	//BDCHECK(nullptr != RulletText);
-	//RulletText->SetText(FText::FromString(FString::FromInt(1)));
+	
+	
+	
 	BDLOG(Warning, TEXT("%d"), RulletTextArray.Num());
 
 	for (int i = 0; i < 5; i++)
@@ -64,4 +67,34 @@ void UBDBottomWidget::UpdateRullet(ASector& ClickedSector)
 		RulletTextArray[i]->SetText(BuildingTypeString[static_cast<int32>(ClickedSector.RulletTypeArray[i])]);
 	}
 
+}
+
+void UBDBottomWidget::UpdateWidgetByMoney(ASector& ClickedSector, int32 money)
+{
+	
+	RerollCostText->SetText(FText::FromString(FString::FromInt(ClickedSector.GetNeedRerollMoney())));
+	BuildCostText->SetText(FText::FromString(FString::FromInt(ClickedSector.GetNeedBuildMoney())));
+
+	if (ClickedSector.GetNeedRerollMoney() <= money)
+	{
+		RerollButton->SetIsEnabled(true);
+	}
+	else
+	{
+		RerollButton->SetIsEnabled(false);
+	}
+
+	if (ClickedSector.GetNeedBuildMoney() <= money)
+	{
+		BuildButton->SetIsEnabled(true);
+	}
+	else
+	{
+		BuildButton->SetIsEnabled(false);
+	}
+}
+
+void UBDBottomWidget::SetMoneyText(int32 Money)
+{
+	MoneyText->SetText(FText::FromString(FString("Money: ") + FString::FromInt(Money)));
 }

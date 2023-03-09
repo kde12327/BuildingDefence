@@ -49,6 +49,14 @@ public:
 
 	void UpdateState();
 
+	int32 GetAdditionalPerson();
+
+	int32 GetLevel();
+
+	int32 GetNeedRerollMoney();
+
+	int32 GetNeedBuildMoney();
+
 public:
 	TArray<BuildingType> RulletTypeArray;
 
@@ -71,5 +79,6 @@ private:
 
 	bool CanBuild = false;
 
+	int32 Level;
 
 };

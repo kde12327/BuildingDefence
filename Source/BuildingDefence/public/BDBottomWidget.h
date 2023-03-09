@@ -29,6 +29,9 @@ protected:
 	UFUNCTION()
 		void OnBuildClicked();
 
+	
+public:
+	void SetMoneyText(int32 Money);
 
 protected:
 	UPROPERTY()
@@ -41,7 +44,13 @@ protected:
 		TArray<class UTextBlock*> RulletTextArray;
 	
 	UPROPERTY()
-		class UTextBlock* RulletText;
+		class UTextBlock* RerollCostText;
+	
+	UPROPERTY()
+		class UTextBlock* BuildCostText;
+	
+	UPROPERTY()
+		class UTextBlock* MoneyText;
 
 
 public:
@@ -50,6 +59,8 @@ public:
 	FOnRerollClickedDelegate OnReroll;
 
 	void UpdateRullet(ASector& ClickedSector);
+
+	void UpdateWidgetByMoney(ASector& ClickedSector, int32 money);
 	
 
 };

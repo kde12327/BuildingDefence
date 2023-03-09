@@ -18,6 +18,9 @@ class BUILDINGDEFENCE_API ABDPlayerController : public APlayerController
 public:
 	ABDPlayerController();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -26,14 +29,33 @@ protected:
 private:
 	void OnMouseClicked();
 
-private:
-	ASector* ClickedSector;
+	void UpdateWaveStarted();
+
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UBDBottomWidget> BottomWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UBDCounterWidget> CounterWidgetClass;
+
+
+
 private:
+	UPROPERTY(EditAnywhere, Category = Sector, Meta = (AllowPrivateAccess = true))
+		TArray<class ASector*> Sectors;
+
+	ASector* ClickedSector;
+
 	UPROPERTY()
 		class UBDBottomWidget* BottomWidget;
+
+	UPROPERTY()
+		class UBDCounterWidget* CounterWidget;
+
+	class AWaveManager* WaveManager;
+
+	int32 WaveNum;
+
+	int32 WaveLevel;
 };

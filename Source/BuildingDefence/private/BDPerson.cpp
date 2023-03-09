@@ -2,6 +2,8 @@
 
 
 #include "BDPerson.h"
+#include "BDPersonAIController.h"
+
 
 // Sets default values
 ABDPerson::ABDPerson()
@@ -20,6 +22,10 @@ ABDPerson::ABDPerson()
 		GetMesh()->SetSkeletalMesh(SM_CAR.Object);
 	}
 
+	AIControllerClass = ABDPersonAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	TargetWaveIndex = 0;
 
 }
 
@@ -28,6 +34,7 @@ ABDPerson::ABDPerson()
 void ABDPerson::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	
 }
 
@@ -50,4 +57,6 @@ void ABDPerson::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+
 

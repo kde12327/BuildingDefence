@@ -5,7 +5,7 @@
 
 ABDPlayerState::ABDPlayerState()
 {
-	CurrentMoney = 100.0f;
+	CurrentMoney = 250.0f;
 }
 
 float ABDPlayerState::GetCurrentMoney() const
@@ -29,4 +29,15 @@ void ABDPlayerState::AddMoney(float IncomeMoney)
 {
 	CurrentMoney += IncomeMoney;
 
+}
+
+int32 ABDPlayerState:: GetCurrentMoney()
+{
+	return static_cast<int32>(CurrentMoney);
+
+}
+
+bool ABDPlayerState::HasMoney(float Money)
+{
+	return CurrentMoney >= Money;
 }

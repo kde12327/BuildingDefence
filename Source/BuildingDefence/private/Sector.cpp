@@ -64,11 +64,13 @@ ASector::ASector()
 	ProducedMoneyPerSecond = 0.0f;
 	AdditionalPersonNum = 0;
 
+	Level = 0;
 
 	BuildingGrades.Init(0, 4);
 
 	RulletTypeArray.Init(BuildingType::RESIDENCE, 5);
 	Reroll();
+
 
 }
 
@@ -120,8 +122,9 @@ void ASector::BuildBuilding()
 		UpdateState();
 
 		CanBuild = false;
-
-		BDLOG(Warning, TEXT("%f %f %f %d"), TakingMoneyPerSecond, TakingMoneyRadius, ProducedMoneyPerSecond, AdditionalPersonNum)
+		Level++;
+		BDLOG(Warning, TEXT("%f %f %f %d"), TakingMoneyPerSecond, TakingMoneyRadius, ProducedMoneyPerSecond, AdditionalPersonNum);
+	
 	}
 }
 
@@ -160,6 +163,8 @@ void ASector::Tick(float DeltaTime)
 		CollisionQueryParam
 	);
 
+	bool DebugSphereFlag = false;
+
 	if (bResult)
 	{
 		float TakingMoney = 0.0f;
@@ -168,10 +173,10 @@ void ASector::Tick(float DeltaTime)
 			ABDPerson* BDPerson = Cast<ABDPerson>(OverlapResult.GetActor());
 			if (BDPerson)
 			{
-				DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Green, false, 0.2f);
 				DrawDebugLine(World, GetActorLocation(), BDPerson->GetActorLocation(), FColor::Blue, false, 0.2f);
-
 				TakingMoney += TakingMoneyPerSecond * DeltaTime;
+				DebugSphereFlag = true;
+
 
 			}
 		}
@@ -192,7 +197,14 @@ void ASector::Tick(float DeltaTime)
 		BDPlayerState->AddMoney(ProducedMoney);
 	}
 
-	DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Red, false, 0.2f);
+	if (DebugSphereFlag)
+	{
+		DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Green, false, 0.2f);
+	}
+	else
+	{
+		DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Red, false, 0.2f);
+	}
 
 
 }
@@ -237,4 +249,24 @@ void ASector::UpdateState()
 	ProducedMoneyPerSecond = BuildingGrades[static_cast<int32>(BuildingType::INDUSTRY)] * 2.0f;
 	AdditionalPersonNum = BuildingGrades[static_cast<int32>(BuildingType::RESIDENCE)];
 
+}
+
+int32 ASector::GetAdditionalPerson()
+{
+	return AdditionalPersonNum;
+}
+
+int32 ASector::GetLevel()
+{
+	return Level;
+}
+
+int32 ASector::GetNeedRerollMoney()
+{
+	return static_cast<int32>(10 * FMath::Pow(2, static_cast<float>(GetLevel())));
+}
+
+int32 ASector::GetNeedBuildMoney()
+{
+	return static_cast<int32>(100 * FMath::Pow(2, static_cast<float>(GetLevel())));
 }

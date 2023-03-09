@@ -4,6 +4,7 @@
 
 #include "BuildingDefence.h"
 #include "GameFramework/Character.h"
+#include "Runtime/Engine/Classes/Engine/TargetPoint.h"
 #include "BDPerson.generated.h"
 
 UCLASS()
@@ -26,5 +27,15 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+	UPROPERTY(VisibleAnywhere, Category = WavePoint, Meta = (AllowPrivateAccess = true))
+		TArray<ATargetPoint*> WavePoints;
+
+	int32 TargetWaveIndex;
+	
+	float MoveSpeed;
+
+	
 
 };
