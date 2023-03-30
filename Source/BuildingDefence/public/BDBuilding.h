@@ -24,11 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetType(BuildingType NewType);
-	void SetGrade(int32 NewGrade);
+	void SetTypes(TArray<BuildingType> NewType);
 
-	BuildingType GetType();
-	int32 GetGrade();
+	TArray<int32> GetTypes();
 
 
 private:
@@ -36,7 +34,8 @@ private:
 		UStaticMeshComponent* Mesh;
 
 protected:
-	BuildingType Type = BuildingType::RESIDENCE;
+	
 
-	int32 Grade = 0;
+	UPROPERTY()
+		TArray<int32> Types;
 };

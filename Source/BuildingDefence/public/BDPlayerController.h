@@ -21,23 +21,44 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 
+
 private:
 	void OnMouseClicked();
 
+	void OnTapPressed();
+
+	void OnTapReleased();
+
 	void UpdateWaveStarted();
+
+
+public:
+	enum class InGameState
+	{
+		READY,
+		WAVE,
+	};
+	void SetGameState(InGameState NewGameState);
 
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UBDBottomWidget> BottomWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UBDLeftWidget> LeftWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UBDCounterWidget> CounterWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UBDRightWidget> RightWidgetClass;
 
 
 
@@ -49,13 +70,23 @@ private:
 
 	UPROPERTY()
 		class UBDBottomWidget* BottomWidget;
+	
+	UPROPERTY()
+		class UBDLeftWidget* LeftWidget;
 
 	UPROPERTY()
 		class UBDCounterWidget* CounterWidget;
+	
+	UPROPERTY()
+		class UBDRightWidget* RightWidget;
 
 	class AWaveManager* WaveManager;
 
 	int32 WaveNum;
 
 	int32 WaveLevel;
+
+	InGameState GameState;
+
+	float SecondCounter;
 };

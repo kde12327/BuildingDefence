@@ -2,6 +2,7 @@
 
 
 #include "Sector.h"
+#include "BDSectorHUDWidget.h"
 #include "Components/WidgetComponent.h"
 #include "BDPerson.h"
 #include "BDPlayerState.h"
@@ -50,7 +51,7 @@ ASector::ASector()
 	SectorDetailWidget->SetRelativeLocation(FVector(0.0f, 150.0f, 100.0f));
 	SectorDetailWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/BuildingDefence/UI/UI_BDSectorHUDWidget.UI_BDSectorHUDWidget_C"));
+	static ConstructorHelpers::FClassFinder<UBDSectorHUDWidget> UI_HUD(TEXT("/Game/BuildingDefence/UI/UI_BDSectorHUDWidget.UI_BDSectorHUDWidget_C"));
 	BDCHECK(UI_HUD.Succeeded());
 	if (UI_HUD.Succeeded())
 	{
@@ -68,10 +69,12 @@ ASector::ASector()
 
 	BuildingGrades.Init(0, 4);
 
-	RulletTypeArray.Init(BuildingType::RESIDENCE, 5);
-	Reroll();
+	RulletTypeArray.Init(BuildingType::NONE, 5);
+	CanBuild = false;
 
+	IsEnable = false;
 
+	WaveIncome = 0;
 }
 
 void ASector::BuildBuilding()
@@ -79,44 +82,9 @@ void ASector::BuildBuilding()
 	BDLOG_S(Warning);
 	if (CanBuild)
 	{
-		int32 Count[5] = { 0, };
-		TArray<int32> MaxTypes;
-		int32 MaxType;
-		int32 MaxValue = 0;
-		
-
-		for (int i = 0; i < RulletTypeArray.Num(); i++)
-		{
-			Count[static_cast<int32>(RulletTypeArray[i])]++;
-		}
-
-		for (int i = 0; i < RulletTypeArray.Num(); i++)
-		{
-			if (MaxValue < Count[i])
-			{
-				MaxValue = Count[i];
-				MaxTypes.SetNum(0);
-				MaxTypes.Add(i);
-			}
-			else if (MaxValue == Count[i])
-			{
-				MaxTypes.Add(i);
-			}
-		}
-
-		if (MaxTypes.Num() == 1)
-		{
-			MaxType = MaxTypes[0];
-		}
-		else
-		{
-			MaxType = MaxTypes[FMath::RandRange(0, MaxTypes.Num() - 1)];
-		}
-		
 		
 		auto Building = GetWorld()->SpawnActor<ABDBuilding>(GetActorLocation() + FVector(0.0f, 0.0f, 45.0f), FRotator::ZeroRotator);
-		Building->SetType(static_cast<BuildingType>(MaxType));
-		Building->SetGrade(MaxValue);
+		Building->SetTypes(RulletTypeArray);
 
 		Buildings.Add(Building);
 		UpdateState();
@@ -124,8 +92,9 @@ void ASector::BuildBuilding()
 		CanBuild = false;
 		Level++;
 		BDLOG(Warning, TEXT("%f %f %f %d"), TakingMoneyPerSecond, TakingMoneyRadius, ProducedMoneyPerSecond, AdditionalPersonNum);
-	
+		
 	}
+
 }
 
 // Called when the game starts or when spawned
@@ -134,9 +103,11 @@ void ASector::BeginPlay()
 	Super::BeginPlay();
 
 	//SectorDetailWidget->SetRelativeLocation(FVector(0.0f, 100.0f, 100.0f));
+
 	SectorDetailWidget->SetHiddenInGame(true);
 
-	
+	static_cast<UBDSectorHUDWidget*>(SectorDetailWidget->GetUserWidgetObject())->SetSectorName(SectorName);
+
 }
 
 void ASector::PostInitializeComponents()
@@ -149,62 +120,71 @@ void ASector::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
-	UWorld* World = GetWorld();
-	FVector Center = GetActorLocation();
-	TArray<FOverlapResult> OverlapResults;
-	FCollisionQueryParams CollisionQueryParam(NAME_None, false, this);
-	bool bResult = World->OverlapMultiByChannel(
-		OverlapResults,
-		Center,
-		FQuat::Identity,
-		ECollisionChannel::ECC_EngineTraceChannel2,
-		FCollisionShape::MakeSphere(TakingMoneyRadius),
-		CollisionQueryParam
-	);
-
-	bool DebugSphereFlag = false;
-
-	if (bResult)
+	if (IsEnable)
 	{
-		float TakingMoney = 0.0f;
-		for (auto const& OverlapResult : OverlapResults)
+		UWorld* World = GetWorld();
+		FVector Center = GetActorLocation();
+		TArray<FOverlapResult> OverlapResults;
+		FCollisionQueryParams CollisionQueryParam(NAME_None, false, this);
+		bool bResult = World->OverlapMultiByChannel(
+			OverlapResults,
+			Center,
+			FQuat::Identity,
+			ECollisionChannel::ECC_EngineTraceChannel2,
+			FCollisionShape::MakeSphere(TakingMoneyRadius),
+			CollisionQueryParam
+		);
+
+		bool DebugSphereFlag = false;
+
+		if (bResult)
 		{
-			ABDPerson* BDPerson = Cast<ABDPerson>(OverlapResult.GetActor());
-			if (BDPerson)
+			float TakingMoney = 0.0f;
+			for (auto const& OverlapResult : OverlapResults)
 			{
-				DrawDebugLine(World, GetActorLocation(), BDPerson->GetActorLocation(), FColor::Blue, false, 0.2f);
-				TakingMoney += TakingMoneyPerSecond * DeltaTime;
-				DebugSphereFlag = true;
+				ABDPerson* BDPerson = Cast<ABDPerson>(OverlapResult.GetActor());
+				if (BDPerson)
+				{
+					DrawDebugLine(World, GetActorLocation(), BDPerson->GetActorLocation(), FColor::Blue, false, 0.2f);
+					TakingMoney += TakingMoneyPerSecond * DeltaTime;
+					DebugSphereFlag = true;
+
+
+				}
+			}
+
+			if (TakingMoney > 0.0f)
+			{
+				ABDPlayerState* BDPlayerState = Cast<ABDPlayerState>(UGameplayStatics::GetPlayerPawn(World, 0)->GetPlayerState());
+				BDPlayerState->AddMoney(TakingMoney);
+
+				AddWaveIncome(TakingMoney);
 
 
 			}
+
 		}
 
-		if (TakingMoney > 0.0f)
+		float ProducedMoney = 0.0f;
+		ProducedMoney += ProducedMoneyPerSecond * DeltaTime;
+		if (ProducedMoney > 0.0f)
 		{
 			ABDPlayerState* BDPlayerState = Cast<ABDPlayerState>(UGameplayStatics::GetPlayerPawn(World, 0)->GetPlayerState());
-			BDPlayerState->AddMoney(TakingMoney);
+			BDPlayerState->AddMoney(ProducedMoney);
+			AddWaveIncome(ProducedMoney);
 		}
-		
+
+		if (DebugSphereFlag)
+		{
+			DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Green, false, 0.2f);
+		}
+		else
+		{
+			DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Red, false, 0.2f);
+		}
 	}
 
-	float ProducedMoney = 0.0f;
-	ProducedMoney += ProducedMoneyPerSecond * DeltaTime;
-	if (ProducedMoney > 0.0f)
-	{
-		ABDPlayerState* BDPlayerState = Cast<ABDPlayerState>(UGameplayStatics::GetPlayerPawn(World, 0)->GetPlayerState());
-		BDPlayerState->AddMoney(ProducedMoney);
-	}
-
-	if (DebugSphereFlag)
-	{
-		DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Green, false, 0.2f);
-	}
-	else
-	{
-		DrawDebugSphere(World, Center, TakingMoneyRadius, 16, FColor::Red, false, 0.2f);
-	}
+	
 
 
 }
@@ -213,6 +193,7 @@ void ASector::Tick(float DeltaTime)
 void ASector::OnSectorClicked()
 {
 	SectorDetailWidget->SetHiddenInGame(false);
+	BDLOG_S(Warning);
 }
 
 void ASector::OnSectorFocusOut()
@@ -233,15 +214,19 @@ void ASector::Reroll()
 void ASector::UpdateState()
 {
 	// Initiate BuildingGrades
-	for (int i = 0; i < BuildingGrades.Num(); i++)
+	for (int TypeIdx = 0; TypeIdx < BuildingGrades.Num(); TypeIdx++)
 	{
-		BuildingGrades[i] = 0;
+		BuildingGrades[TypeIdx] = 0;
 	}
 
 	// Count Buildings Grade
-	for (int i = 0; i < Buildings.Num(); i++)
+	for (int BuildingIdx = 0; BuildingIdx < Buildings.Num(); BuildingIdx++)
 	{
-		BuildingGrades[static_cast<int32>(Buildings[i]->GetType())] = Buildings[i]->GetGrade();
+		auto BuildingTypes = Buildings[BuildingIdx]->GetTypes();
+		for (int TypeIdx = 0; TypeIdx < 4; TypeIdx++)
+		{
+			BuildingGrades[TypeIdx] += BuildingTypes[TypeIdx];
+		}
 	}
 
 	TakingMoneyPerSecond = BuildingGrades[static_cast<int32>(BuildingType::COMMERCE)] * 10.0f;
@@ -249,6 +234,7 @@ void ASector::UpdateState()
 	ProducedMoneyPerSecond = BuildingGrades[static_cast<int32>(BuildingType::INDUSTRY)] * 2.0f;
 	AdditionalPersonNum = BuildingGrades[static_cast<int32>(BuildingType::RESIDENCE)];
 
+	static_cast<UBDSectorHUDWidget*>(SectorDetailWidget->GetUserWidgetObject())->UpdateWidget(TakingMoneyPerSecond, TakingMoneyRadius, ProducedMoneyPerSecond, AdditionalPersonNum);
 }
 
 int32 ASector::GetAdditionalPerson()
@@ -269,4 +255,34 @@ int32 ASector::GetNeedRerollMoney()
 int32 ASector::GetNeedBuildMoney()
 {
 	return static_cast<int32>(100 * FMath::Pow(2, static_cast<float>(GetLevel())));
+}
+
+bool ASector::GetCanBuild()
+{
+	return CanBuild;
+}
+
+TArray<ABDBuilding*> ASector::GetBuildings()
+{
+	return Buildings;
+}
+
+void ASector::InitWaveIncome()
+{
+	WaveIncome = 0;
+}
+
+int32 ASector::GetWaveIncome()
+{
+	return static_cast<int32>(WaveIncome);
+}
+
+void ASector::AddWaveIncome(float money)
+{
+	WaveIncome += money;
+}
+
+FString ASector::GetSectorName()
+{
+	return SectorName;
 }

@@ -21,24 +21,39 @@ void UBDBottomWidget::NativeConstruct()
 	{
 		BuildButton->OnClicked.AddDynamic(this, &UBDBottomWidget::OnBuildClicked);
 	}
+	
+	ConfirmButton = Cast<UButton>(GetWidgetFromName(TEXT("BtnConfirm")));
+	if (nullptr != ConfirmButton)
+	{
+		ConfirmButton->OnClicked.AddDynamic(this, &UBDBottomWidget::OnConfirmClicked);
+	}
 
 	for (int i = 0; i < 5; i++)
 	{
 		RulletTextArray.Add(Cast<UTextBlock>(GetWidgetFromName(FName(FString(TEXT("TextRullet")) + FString::FromInt(i)))));
 
 	}
+	
+	for (int i = 0; i < 5; i++)
+	{
+		RulletButtonArray.Add(Cast<UButton>(GetWidgetFromName(FName(FString(TEXT("BtnRullet")) + FString::FromInt(i)))));
+
+	}
 
 	MoneyText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextMoney")));
+
+	WaveText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextWave")));
 
 	RerollCostText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextRerollCost")));
 
 	BuildCostText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextBuildCost")));
+	
+	IsRulletVisible = false;
 }	
 
 void UBDBottomWidget::OnRerollClicked()
 {
 	BDLOG_S(Warning);
-
 	OnReroll.Broadcast();
 
 }
@@ -46,8 +61,16 @@ void UBDBottomWidget::OnRerollClicked()
 void UBDBottomWidget::OnBuildClicked()
 {
 	BDLOG_S(Warning);
-
 	OnBuild.Broadcast();
+
+}
+
+void UBDBottomWidget::OnConfirmClicked()
+{
+	BDLOG_S(Warning);
+	OnConfirm.Broadcast();
+
+
 
 }
 
@@ -59,12 +82,13 @@ void UBDBottomWidget::UpdateRullet(ASector& ClickedSector)
 	
 	BDLOG(Warning, TEXT("%d"), RulletTextArray.Num());
 
-	for (int i = 0; i < 5; i++)
+	for (int RulletIdx = 0; RulletIdx < 5; RulletIdx++)
 	{
-		BDCHECK(nullptr != RulletTextArray[i]);
-		BDLOG(Warning, TEXT("%d"), ClickedSector.RulletTypeArray[i]);
+		BDCHECK(nullptr != RulletTextArray[RulletIdx]);
+		BDLOG(Warning, TEXT("%d"), ClickedSector.RulletTypeArray[RulletIdx]);
 
-		RulletTextArray[i]->SetText(BuildingTypeString[static_cast<int32>(ClickedSector.RulletTypeArray[i])]);
+		RulletTextArray[RulletIdx]->SetText(BuildingTypeString[static_cast<int32>(ClickedSector.RulletTypeArray[RulletIdx])]);
+		RulletButtonArray[RulletIdx]->SetBackgroundColor(BuildingTypeColor[static_cast<int32>(ClickedSector.RulletTypeArray[RulletIdx])]);
 	}
 
 }
@@ -75,26 +99,46 @@ void UBDBottomWidget::UpdateWidgetByMoney(ASector& ClickedSector, int32 money)
 	RerollCostText->SetText(FText::FromString(FString::FromInt(ClickedSector.GetNeedRerollMoney())));
 	BuildCostText->SetText(FText::FromString(FString::FromInt(ClickedSector.GetNeedBuildMoney())));
 
-	if (ClickedSector.GetNeedRerollMoney() <= money)
-	{
-		RerollButton->SetIsEnabled(true);
-	}
-	else
-	{
-		RerollButton->SetIsEnabled(false);
-	}
-
-	if (ClickedSector.GetNeedBuildMoney() <= money)
-	{
-		BuildButton->SetIsEnabled(true);
-	}
-	else
-	{
-		BuildButton->SetIsEnabled(false);
-	}
 }
 
 void UBDBottomWidget::SetMoneyText(int32 Money)
 {
 	MoneyText->SetText(FText::FromString(FString("Money: ") + FString::FromInt(Money)));
 }
+
+void UBDBottomWidget::SetWaveText(int32 Wave)
+{
+	WaveText->SetText(FText::FromString(FString("Wave ") + FString::FromInt(Wave)));
+}
+
+
+
+void UBDBottomWidget::ShowBuild()
+{
+	if (!IsRulletVisible)
+	{
+		PlayAnimation(ShowWidget);
+		IsRulletVisible = true;
+	}
+	BuildButton->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UBDBottomWidget::ShowRullet()
+{
+	if (!IsRulletVisible)
+	{
+		PlayAnimation(ShowWidget);
+		IsRulletVisible = true;
+	}
+	BuildButton->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UBDBottomWidget::HideRullet()
+{
+	if (IsRulletVisible)
+	{
+		PlayAnimation(HideWidget);
+		IsRulletVisible = false;
+	}
+}
+

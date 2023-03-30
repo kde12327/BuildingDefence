@@ -69,7 +69,6 @@ void AWaveManager::WaveStart()
 void AWaveManager::WaveEnd()
 {
     BDLOG_S(Warning);
-    CounterWidget->OnWaveEnd();
     OnWaveEnd.Broadcast();
 }
 

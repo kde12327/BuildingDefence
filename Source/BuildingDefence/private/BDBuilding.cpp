@@ -26,6 +26,7 @@ ABDBuilding::ABDBuilding()
 		BDLOG(Error, TEXT("Failed to load staticmesh asset. : %s"), *AssetPath);
 	}
 
+	Types.Init(0, 4);
 }
 
 // Called when the game starts or when spawned
@@ -42,22 +43,19 @@ void ABDBuilding::Tick(float DeltaTime)
 
 }
 
-void ABDBuilding::SetType(BuildingType NewType)
+void ABDBuilding::SetTypes(TArray<BuildingType> NewType)
 {
-	Type = NewType;
+	Types.Init(0, 4);
+
+	for (int TypeIdx = 0; TypeIdx < NewType.Num(); TypeIdx++)
+	{
+		Types[static_cast<int32>(NewType[TypeIdx])] ++;
+	}
 }
 
-void ABDBuilding::SetGrade(int32 NewGrade)
+
+TArray<int32> ABDBuilding::GetTypes()
 {
-	Grade = NewGrade;
+	return Types;
 }
 
-BuildingType ABDBuilding::GetType()
-{
-	return Type;
-}
-
-int32 ABDBuilding::GetGrade()
-{
-	return Grade;
-}

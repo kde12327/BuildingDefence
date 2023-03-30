@@ -38,6 +38,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = UI)
 		class UWidgetComponent* SectorDetailWidget;
 
+	
+
 
 
 public:
@@ -57,9 +59,24 @@ public:
 
 	int32 GetNeedBuildMoney();
 
+	bool GetCanBuild();
+
+	TArray<ABDBuilding*> GetBuildings();
+
+	void InitWaveIncome();
+
+	int32 GetWaveIncome();
+
+	void AddWaveIncome(float money);
+
+	FString GetSectorName();
+
 public:
 	TArray<BuildingType> RulletTypeArray;
 
+	bool IsEnable;
+
+	
 
 private:
 
@@ -67,6 +84,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
 		UStaticMeshComponent* BaseMesh;
+
+	UPROPERTY(EditAnywhere, Category = Sector, Meta = (AllowPrivateAccess = true))
+		FString SectorName;
 
 	TArray<int32> BuildingGrades;
 
@@ -81,4 +101,5 @@ private:
 
 	int32 Level;
 
+	float WaveIncome;
 };

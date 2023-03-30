@@ -20,6 +20,7 @@ enum class BuildingType
 	INDUSTRY,
 	TOURISM,
 	END,
+	NONE,
 };
 
 static const FText BuildingTypeString[] =
@@ -27,5 +28,17 @@ static const FText BuildingTypeString[] =
 	FText::FromString(FString("RESIDENCE")),
 	FText::FromString(FString("COMMERCE")),
 	FText::FromString(FString("INDUSTRY")),
-	FText::FromString(FString("TOURISM"))
+	FText::FromString(FString("TOURISM")),
+	FText::FromString(FString("END")),
+	FText::FromString(FString("-"))
+};
+
+static const FColor BuildingTypeColor[] =
+{
+	FColor::Red,
+	FColor::Yellow,
+	FColor::Green,
+	FColor::Blue,
+	FColor::Silver,
+	FColor::Black,
 };

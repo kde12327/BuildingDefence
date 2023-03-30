@@ -13,6 +13,7 @@
  */
 DECLARE_MULTICAST_DELEGATE(FOnRerollClickedDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnBuildClickedDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnConfirmClickedDelegate);
 
 
 UCLASS()
@@ -28,10 +29,15 @@ protected:
 
 	UFUNCTION()
 		void OnBuildClicked();
+	
+	UFUNCTION()
+		void OnConfirmClicked();
 
 	
 public:
 	void SetMoneyText(int32 Money);
+
+	void SetWaveText(int32 Wave);
 
 protected:
 	UPROPERTY()
@@ -41,7 +47,13 @@ protected:
 		class UButton* BuildButton;
 
 	UPROPERTY()
+		class UButton* ConfirmButton;
+
+	UPROPERTY()
 		TArray<class UTextBlock*> RulletTextArray;
+	
+	UPROPERTY()
+		TArray<class UButton*> RulletButtonArray;
 	
 	UPROPERTY()
 		class UTextBlock* RerollCostText;
@@ -49,8 +61,12 @@ protected:
 	UPROPERTY()
 		class UTextBlock* BuildCostText;
 	
+	
 	UPROPERTY()
 		class UTextBlock* MoneyText;
+	
+	UPROPERTY()
+		class UTextBlock* WaveText;
 
 
 public:
@@ -58,9 +74,23 @@ public:
 
 	FOnRerollClickedDelegate OnReroll;
 
+	FOnRerollClickedDelegate OnConfirm;
+
 	void UpdateRullet(ASector& ClickedSector);
 
 	void UpdateWidgetByMoney(ASector& ClickedSector, int32 money);
-	
 
+	void ShowBuild();
+
+	void ShowRullet();
+	void HideRullet();
+	
+private:
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+		class UWidgetAnimation* ShowWidget;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+		class UWidgetAnimation* HideWidget;
+
+	bool IsRulletVisible;
 };
