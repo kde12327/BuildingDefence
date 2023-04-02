@@ -136,10 +136,8 @@ void ABDPlayerController::BeginPlay()
 		WaveManager->WaveStart();
 		SetGameState(InGameState::WAVE);
 		if (ClickedSector) {
-			ClickedSector->OnSectorFocusOut();
-			ClickedSector = nullptr;
+			
 			BottomWidget->HideRullet();
-			LeftWidget->HideSectorDetail();
 		}
 
 		for (auto Sector : Sectors)
@@ -223,48 +221,57 @@ void ABDPlayerController::OnMouseClicked()
 	BDCHECK(nullptr != Hit.GetActor());
 	BDLOG(Warning, TEXT("%s"), *Hit.GetActor()->GetName());
 
-	if (GameState == InGameState::READY)
+	
+	if (nullptr != Cast<ASector>(Hit.GetActor()))
 	{
-		if (nullptr != Cast<ASector>(Hit.GetActor()))
+		//BDCHECK(nullptr != ClickedSector);
+		if (nullptr != ClickedSector && ClickedSector != static_cast<ASector*>(Hit.GetActor()))
 		{
-			//BDCHECK(nullptr != ClickedSector);
-			if (nullptr != ClickedSector && ClickedSector != static_cast<ASector*>(Hit.GetActor()))
-			{
-				ClickedSector->OnSectorFocusOut();
-			}
-			ClickedSector = static_cast<ASector*>(Hit.GetActor());
-			ClickedSector->OnSectorClicked();
+			ClickedSector->OnSectorFocusOut();
+		}
+		ClickedSector = static_cast<ASector*>(Hit.GetActor());
+		ClickedSector->OnSectorClicked();
+		
+		if (GameState == InGameState::READY)
+		{
 			BottomWidget->UpdateRullet(*ClickedSector);
-			LeftWidget->UpdateSectorDetail(*ClickedSector);
+		}
+		LeftWidget->UpdateSectorDetail(*ClickedSector);
 
-			if (ClickedSector->GetCanBuild())
+		if (ClickedSector->GetCanBuild())
+		{
+			if (GameState == InGameState::READY)
 			{
 				BottomWidget->ShowRullet();
-				LeftWidget->ShowSectorDetail();
 			}
-			else
-			{
-				BottomWidget->ShowBuild();
-				LeftWidget->ShowSectorDetail();
-			}
-
-
+			LeftWidget->ShowSectorDetail();
 		}
 		else
 		{
-			if (ClickedSector) {
-				ClickedSector->OnSectorFocusOut();
-				ClickedSector = nullptr;
-				BottomWidget->HideRullet();
-				LeftWidget->HideSectorDetail();
-
-
+			if (GameState == InGameState::READY)
+			{
+				BottomWidget->ShowBuild();
 			}
+			LeftWidget->ShowSectorDetail();
+		}
+
+
+	}
+	else
+	{
+		if (ClickedSector) {
+			ClickedSector->OnSectorFocusOut();
+			ClickedSector = nullptr;
+			BottomWidget->HideRullet();
+			LeftWidget->HideSectorDetail();
 
 
 		}
 
+
 	}
+
+	
 }
 
 void ABDPlayerController::OnTapPressed()
