@@ -6,12 +6,9 @@
 ABDPlayerState::ABDPlayerState()
 {
 	CurrentMoney = 250.0f;
+	TotalIncome = 0.0f;
 }
 
-float ABDPlayerState::GetCurrentMoney() const
-{
-	return CurrentMoney;
-}
 
 bool ABDPlayerState::UseMoney(float Cost)
 {
@@ -28,13 +25,18 @@ bool ABDPlayerState::UseMoney(float Cost)
 void ABDPlayerState::AddMoney(float IncomeMoney)
 {
 	CurrentMoney += IncomeMoney;
-
+	TotalIncome += IncomeMoney;
 }
 
 int32 ABDPlayerState:: GetCurrentMoney()
 {
 	return static_cast<int32>(CurrentMoney);
 
+}
+
+int32 ABDPlayerState::GetTotalIncome()
+{
+	return static_cast<int32>(TotalIncome);
 }
 
 bool ABDPlayerState::HasMoney(float Money)

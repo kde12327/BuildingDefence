@@ -17,15 +17,17 @@ class BUILDINGDEFENCE_API ABDPlayerState : public APlayerState
 public:
 	ABDPlayerState();
 
-	float GetCurrentMoney() const;
+	int32 GetCurrentMoney() ;
+	int32 GetTotalIncome() ;
 
 	bool UseMoney(float Cost);
 	void AddMoney(float IncomeMoney);
-	int32 GetCurrentMoney();
 	bool HasMoney(float Money);
 
 protected:
 	UPROPERTY(Transient)
 		float CurrentMoney;
+
+	float TotalIncome;
 
 };

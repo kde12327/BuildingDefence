@@ -11,6 +11,7 @@
  */
 
 DECLARE_MULTICAST_DELEGATE(FOnStartClickedDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnPauseClickedDelegate);
 
 
 UCLASS()
@@ -25,6 +26,9 @@ protected:
 
 	UFUNCTION()
 		void OnStartClicked();
+
+	UFUNCTION()
+		void OnPauseClicked();
 
 public:
 
@@ -41,9 +45,14 @@ protected:
 	UPROPERTY()
 		class UTextBlock* CountText;
 
+	UPROPERTY()
+		class UButton* PauseButton;
+
 public:
 
 	FOnStartClickedDelegate OnStart;
+
+	FOnPauseClickedDelegate OnPause;
 
 	void UpdateWaveLeftText(int32 WaveLeft);
 

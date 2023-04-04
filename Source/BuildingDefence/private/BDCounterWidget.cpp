@@ -18,6 +18,12 @@ void UBDCounterWidget::NativeConstruct()
 
 	CountText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextCount")));
 
+	PauseButton = Cast<UButton>(GetWidgetFromName(TEXT("BtnPause")));
+	if (nullptr != PauseButton)
+	{
+		PauseButton->OnClicked.AddDynamic(this, &UBDCounterWidget::OnPauseClicked);
+	}
+
 	ShowStartButtonDelegate.BindDynamic(this, &UBDCounterWidget::ShowStartButtonStarted);
 	HideStartButtonDelegate.BindDynamic(this, &UBDCounterWidget::HideStartButtonEnded);
 
@@ -59,6 +65,15 @@ void UBDCounterWidget::OnStartClicked()
 		WaveStarted = true;
 	}
 	
+
+}
+
+void UBDCounterWidget::OnPauseClicked()
+{
+	BDLOG_S(Warning);
+
+	OnPause.Broadcast();
+
 
 }
 

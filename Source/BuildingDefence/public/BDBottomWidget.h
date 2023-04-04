@@ -67,6 +67,9 @@ protected:
 	
 	UPROPERTY()
 		class UTextBlock* WaveText;
+	
+	UPROPERTY()
+		class UTextBlock* TaxText;
 
 
 public:

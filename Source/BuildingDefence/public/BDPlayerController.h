@@ -43,6 +43,7 @@ public:
 	{
 		READY,
 		WAVE,
+		GAMEOVER,
 	};
 	void SetGameState(InGameState NewGameState);
 
@@ -60,7 +61,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UBDRightWidget> RightWidgetClass;
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UBDGameOverWidget> GameOverWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UBDPauseWidget> PauseWidgetClass;
 
 private:
 	UPROPERTY(EditAnywhere, Category = Sector, Meta = (AllowPrivateAccess = true))
@@ -79,6 +84,12 @@ private:
 	
 	UPROPERTY()
 		class UBDRightWidget* RightWidget;
+
+	UPROPERTY()
+		class UBDGameOverWidget* GameOverWidget;
+
+	UPROPERTY()
+		class UBDPauseWidget* PauseWidget;
 
 	class AWaveManager* WaveManager;
 

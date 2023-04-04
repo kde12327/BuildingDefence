@@ -42,3 +42,18 @@ static const FColor BuildingTypeColor[] =
 	FColor::Silver,
 	FColor::Black,
 };
+
+static const int32 WaveTax[] =
+{
+	0,
+	100,
+	200,
+	300,
+	500,
+	800,
+	1300,
+	2100,
+	3400,
+	5500,
+	8900,
+};

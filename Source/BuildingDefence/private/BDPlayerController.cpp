@@ -8,6 +8,8 @@
 #include "BDCounterWidget.h"
 #include "Sector.h"
 #include "BDPlayerState.h"
+#include "BDGameOverWidget.h"
+#include "BDPauseWidget.h"
 #include "WaveManager.h"
 
 
@@ -36,6 +38,18 @@ ABDPlayerController::ABDPlayerController()
 	if (UI_RIGHT_C.Succeeded())
 	{
 		RightWidgetClass = UI_RIGHT_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UBDGameOverWidget> UI_GAMEOVER_C(TEXT("/Game/BuildingDefence/UI/UI_BDGameOverWidget.UI_BDGameOverWidget_C"));
+	if (UI_GAMEOVER_C.Succeeded())
+	{
+		GameOverWidgetClass = UI_GAMEOVER_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UBDPauseWidget> UI_PAUSE_C(TEXT("/Game/BuildingDefence/UI/UI_BDPauseWidget.UI_BDPauseWidget_C"));
+	if (UI_PAUSE_C.Succeeded())
+	{
+		PauseWidgetClass = UI_PAUSE_C.Class;
 	}
 
 	WaveLevel = 1;
@@ -146,7 +160,14 @@ void ABDPlayerController::BeginPlay()
 		}
 	});
 
-	
+	CounterWidget->OnPause.AddLambda([this]()->void {
+		// On GamePause
+		BDLOG_S(Warning);
+		SetPause(true);
+
+		PauseWidget->SetVisibility(ESlateVisibility::Visible);
+		
+	});
 
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWaveManager::StaticClass(), FoundActors);
@@ -158,11 +179,35 @@ void ABDPlayerController::BeginPlay()
 	WaveManager->OnWaveEnd.AddLambda([this]()->void {
 		// On Wave End
 		BDLOG_S(Warning);
-		CounterWidget->OnWaveEnd();
+		
+		// Tax Check
+		if (static_cast<ABDPlayerState*>(PlayerState)->UseMoney(WaveTax[WaveLevel]))
+		{
+			// Next Stage
+			BDLOG(Warning, TEXT("Next Stage"));
 
-		WaveLevel++;
-		BottomWidget->SetWaveText(WaveLevel);
-		SetGameState(InGameState::READY);
+			CounterWidget->OnWaveEnd();
+
+			WaveLevel++;
+			BottomWidget->SetWaveText(WaveLevel);
+			SetGameState(InGameState::READY);
+		}
+		else
+		{
+			// Game Over
+			BDLOG(Warning, TEXT("Game Over"));
+
+			GameOverWidget = CreateWidget<UBDGameOverWidget>(this, GameOverWidgetClass);
+			GameOverWidget->AddToViewport(1);
+
+			GameOverWidget->SetLastWave(WaveLevel);
+			GameOverWidget->SetTotalIncome(static_cast<ABDPlayerState*>(PlayerState)->GetTotalIncome());
+			SetGameState(InGameState::GAMEOVER);
+
+		}
+		
+		
+
 
 	});
 
@@ -179,6 +224,24 @@ void ABDPlayerController::BeginPlay()
 	RightWidget->AddToViewport(1);
 	RightWidget->UpdateIncomeWidget(Sectors);
 	
+	PauseWidget = CreateWidget<UBDPauseWidget>(this, PauseWidgetClass);
+	PauseWidget->AddToViewport(1);
+	PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	PauseWidget->OnToMain.AddLambda([this]()->void {
+		// On To Main
+		BDLOG_S(Warning);
+
+
+	});
+
+	PauseWidget->OnResume.AddLambda([this]()->void {
+		// On Resume
+		BDLOG_S(Warning);
+		SetPause(false);
+		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	});
 	
 }
 
@@ -202,6 +265,13 @@ void ABDPlayerController::SetGameState(InGameState NewGameState)
 		}
 		break;
 	case InGameState::WAVE:
+		GameState = NewGameState;
+		for (auto Sector : Sectors)
+		{
+			Sector->IsEnable = true;
+		}
+		break;
+	case InGameState::GAMEOVER:
 		GameState = NewGameState;
 		for (auto Sector : Sectors)
 		{

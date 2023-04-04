@@ -44,11 +44,15 @@ void UBDBottomWidget::NativeConstruct()
 
 	WaveText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextWave")));
 
+	TaxText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextTax")));
+
 	RerollCostText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextRerollCost")));
 
 	BuildCostText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextBuildCost")));
 	
 	IsRulletVisible = false;
+
+	SetWaveText(1);
 }	
 
 void UBDBottomWidget::OnRerollClicked()
@@ -109,6 +113,7 @@ void UBDBottomWidget::SetMoneyText(int32 Money)
 void UBDBottomWidget::SetWaveText(int32 Wave)
 {
 	WaveText->SetText(FText::FromString(FString("Wave ") + FString::FromInt(Wave)));
+	TaxText->SetText(FText::FromString(FString("Tax:  ") + FString::FromInt(WaveTax[Wave])));
 }
 
 
