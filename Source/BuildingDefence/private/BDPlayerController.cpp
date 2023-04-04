@@ -199,6 +199,7 @@ void ABDPlayerController::BeginPlay()
 
 			GameOverWidget = CreateWidget<UBDGameOverWidget>(this, GameOverWidgetClass);
 			GameOverWidget->AddToViewport(1);
+			SetPause(true);
 
 			GameOverWidget->SetLastWave(WaveLevel);
 			GameOverWidget->SetTotalIncome(static_cast<ABDPlayerState*>(PlayerState)->GetTotalIncome());
