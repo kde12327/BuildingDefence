@@ -26,6 +26,9 @@ void UBDPauseWidget::NativeConstruct()
 void UBDPauseWidget::OnToMainClicked()
 {
 	OnToMain.Broadcast();
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
+
+
 
 }
 void UBDPauseWidget::OnResumeClicked()

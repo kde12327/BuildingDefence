@@ -2,4 +2,10 @@
 
 
 #include "BuildingDefenceGameModeBase.h"
+#include "BDMainMenuPlayerController.h"
 
+ABuildingDefenceGameModeBase::ABuildingDefenceGameModeBase()
+{
+	PlayerControllerClass = ABDMainMenuPlayerController::StaticClass();
+
+}

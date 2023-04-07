@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "BuildingDefence.h"
 #include "Blueprint/UserWidget.h"
 #include "BDGameOverWidget.generated.h"
 
@@ -21,6 +21,9 @@ public:
 	void SetLastWave(int32 Wave);
 
 	void SetTotalIncome(int32 Income);
+
+	UFUNCTION()
+		void OnToMainClicked();
 
 
 protected:

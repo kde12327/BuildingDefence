@@ -14,4 +14,6 @@ class BUILDINGDEFENCE_API ABuildingDefenceGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	ABuildingDefenceGameModeBase();
 };

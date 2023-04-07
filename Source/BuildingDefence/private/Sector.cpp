@@ -26,7 +26,7 @@ ASector::ASector()
 	RangeTrigger->SetupAttachment(RootComponent);
 
 
-	ClickableTrigger->SetBoxExtent(FVector(40.0f, 42.0f, 30.0f));
+	ClickableTrigger->SetBoxExtent(FVector(80.0f, 80.0f, 30.0f));
 	ClickableTrigger->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 	ClickableTrigger->SetCollisionProfileName(TEXT("ClickableObject"));
 	RangeTrigger->SetRelativeScale3D(FVector(4.0f, 4.0f, 4.0f));

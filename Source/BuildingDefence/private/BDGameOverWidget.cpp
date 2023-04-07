@@ -15,6 +15,11 @@ void UBDGameOverWidget::NativeConstruct()
 
 	ToMainButton = Cast<UButton>(GetWidgetFromName(TEXT("BtnToMain")));
 
+	if (nullptr != ToMainButton)
+	{
+		ToMainButton->OnClicked.AddDynamic(this, &UBDGameOverWidget::OnToMainClicked);
+	}
+
 
 }
 
@@ -27,5 +32,10 @@ void UBDGameOverWidget::SetLastWave(int32 Wave)
 void UBDGameOverWidget::SetTotalIncome(int32 Income)
 {
 	TotalIncomeText->SetText(FText::FromString(FString("TotalIncome: ") + FString::FromInt(Income)));
+
+}
+void UBDGameOverWidget::OnToMainClicked()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 
 }
