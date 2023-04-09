@@ -24,7 +24,7 @@ void UBDMainMenuWidget::NativeConstruct()
 
 void UBDMainMenuWidget::OnGameStartClicked()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("TestBasicLevel"));
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("GamePlay"));
 }
 
 
