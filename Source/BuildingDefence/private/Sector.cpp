@@ -26,7 +26,7 @@ ASector::ASector()
 	RangeTrigger->SetupAttachment(RootComponent);
 
 
-	ClickableTrigger->SetBoxExtent(FVector(80.0f, 80.0f, 30.0f));
+	ClickableTrigger->SetBoxExtent(FVector(BoxWidth, BoxHeight, 30.0f));
 	ClickableTrigger->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 	ClickableTrigger->SetCollisionProfileName(TEXT("ClickableObject"));
 	RangeTrigger->SetRelativeScale3D(FVector(4.0f, 4.0f, 4.0f));
@@ -82,8 +82,10 @@ void ASector::BuildBuilding()
 	BDLOG_S(Warning);
 	if (CanBuild)
 	{
-		
-		auto Building = GetWorld()->SpawnActor<ABDBuilding>(GetActorLocation() + FVector(0.0f, 0.0f, 45.0f), FRotator::ZeroRotator);
+		int32 num = Buildings.Num();
+		FVector PositionVector = FVector( (1 - (num/3)) * (BoxHeight / 2.0f) , (-1 + (num % 3)) * (BoxWidth / 2.0f), 60.0f);
+
+		auto Building = GetWorld()->SpawnActor<ABDBuilding>(GetActorLocation() + PositionVector, FRotator::ZeroRotator);
 		Building->SetTypes(RulletTypeArray);
 
 		Buildings.Add(Building);

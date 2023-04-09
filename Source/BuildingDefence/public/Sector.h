@@ -102,4 +102,8 @@ private:
 	int32 Level;
 
 	float WaveIncome;
+
+	float BoxWidth = 80.0f;
+	float BoxHeight = 80.0f;
+
 };

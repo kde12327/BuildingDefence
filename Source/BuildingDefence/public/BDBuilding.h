@@ -30,7 +30,7 @@ public:
 
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, Meta = (AllowPrivateAccess = true))
 		UStaticMeshComponent* Mesh;
 
 protected:
@@ -38,4 +38,16 @@ protected:
 
 	UPROPERTY()
 		TArray<int32> Types;
+
+	UPROPERTY()
+		int32 Grade = 0;
+
+	UPROPERTY()
+		int32 MainType = 0;
+
+	UPROPERTY()
+		TArray<UStaticMesh*> BuildingMeshs;
+	
+	UPROPERTY()
+		UMaterialInstanceDynamic* BuildingMaterialsInstance;
 };
